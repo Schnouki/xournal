@@ -1281,17 +1281,25 @@ void start_text(GdkEvent *event, struct Item *item)
   GnomeCanvasItem *canvas_item;
   PangoFontDescription *font_desc;
   GdkColor color;
+  int font_height;
+  double dpi;
+  PangoContext *pc;
 
   get_pointer_coords(event, pt);
 
   ui.cur_item_type = ITEM_TEXT;
+
+  /* 1 inch = 72 points = (DPI) pixels */
+  pc = gdk_pango_context_get();
+  dpi = pango_cairo_context_get_resolution(pc);
+  font_height = ui.font_size * dpi / 72.;
 
   if (item==NULL) {
     item = g_new(struct Item, 1);
     item->text = NULL;
     item->canvas_item = NULL;
     item->bbox.left = pt[0];
-    item->bbox.top = pt[1];
+    item->bbox.top = pt[1] - (font_height / 2);
     item->bbox.right = ui.cur_page->width;
     item->bbox.bottom = pt[1]+100.;
     item->font_name = g_strdup(ui.font_name);
